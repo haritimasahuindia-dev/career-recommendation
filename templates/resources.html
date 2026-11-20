@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Learning resources — Student Recommendation{% endblock %}
+{% block description %}Free courses, official docs and practice sites mapped to the skills you actually need.{% endblock %}
+
+{% block content %}
+<div class="wrap-wide section-sm">
+  <div class="section-head">
+    <span class="eyebrow">Library</span>
+    <h2 style="margin-top:var(--s-2)">Learning resources</h2>
+    <p class="lede">{{ resources|length }} curated resources across {{ skill_count }} skills — official docs, free courses and practice platforms. No paid courses, no fluff.</p>
+  </div>
+
+  <div class="filters" data-filter-group="#grid" data-filter-group-count="#count" data-filter-group-empty="#empty">
+    <input class="input" type="text" data-filter="#grid" data-filter-count="#count" data-filter-empty="#empty" placeholder="Search resources, providers or skills…" />
+    <span class="chip on" data-filter-chip="all">All</span>
+    {% for k in kinds %}
+    <span class="chip" data-filter-chip="{{ k }}">{{ k }}</span>
+    {% endfor %}
+  </div>
+
+  <div class="row between wrapf gap-2" style="margin-bottom:var(--s-4)">
+    <span class="dim mono" style="font-size:var(--t-xs)"><span id="count">{{ resources|length }}</span> resources shown</span>
+  </div>
+
+  <div class="grid g-3" id="grid">
+    {% for r in resources %}
+    <div class="card" data-cat="{{ r.kind }}" data-search="{{ r.title }} {{ r.provider }} {{ r.skill_name }}">
+      <div class="row between gap-2" style="margin-bottom:var(--s-3)">
+        <span class="res-kind">{{ r.kind }}</span>
+        <span class="mono dim" style="font-size:var(--t-xs)">~{{ r.hours }}h</span>
+      </div>
+      <h4>{{ r.title }}</h4>
+      <div class="dim" style="font-size:var(--t-sm)">{{ r.provider }}</div>
+      <div class="row between gap-2" style="margin-top:auto;padding-top:var(--s-4)">
+        <a class="chip" href="/skills#{{ r.skill_id }}">{{ r.skill_name }}</a>
+        {% if r.url %}<a class="btn btn-text btn-sm" href="{{ r.url }}" target="_blank" rel="noopener">Open ↗</a>{% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="empty hide" id="empty" style="margin-top:var(--s-5)">No resources match that filter.</div>
+</div>
+{% endblock %}

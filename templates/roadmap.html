@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+{% block title %}Roadmap builder — Student Recommendation{% endblock %}
+{% block description %}Pick a career and a duration in weeks, months or years to get a phased learning roadmap with curated free resources.{% endblock %}
+
+{% block content %}
+<div class="wrap-wide section-sm">
+  <div class="section-head">
+    <span class="eyebrow">Planner</span>
+    <h2 style="margin-top:var(--s-2)">Roadmap builder</h2>
+    <p class="lede">See the full learning plan for any role assuming you are starting from zero. For a plan based on your <em>actual</em> skills, use the profiler.</p>
+  </div>
+
+  <div class="card" style="margin-bottom:var(--s-5)">
+    <div class="grid form-row">
+      <label class="field" style="margin:0">
+        <span class="label">Target career</span>
+        <select class="select" id="career"></select>
+      </label>
+      <label class="field" style="margin:0">
+        <span class="label">Duration</span>
+        <input class="input" type="number" id="amount" value="4" min="1" max="52" />
+      </label>
+      <label class="field" style="margin:0">
+        <span class="label">Unit</span>
+        <select class="select" id="unit">
+          <option value="week">Weeks</option>
+          <option value="month" selected>Months</option>
+          <option value="year">Years</option>
+        </select>
+      </label>
+      <button class="btn btn-primary" id="go">Generate</button>
+    </div>
+    <div class="alert" id="err" hidden style="margin-top:var(--s-3)"></div>
+  </div>
+
+  <div id="out">
+    <div class="empty">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+        <circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>
+      </svg>
+      <p><strong>Pick a role and press Generate.</strong><br />You'll get phases, weekly focus and free resources.</p>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function () {
+  var esc = function (s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); };
+  var $ = function (i) { return document.getElementById(i); };
+  /* Only id/title/category ship to the client; nothing more is needed for the
+     dropdown, so compensation figures never reach the page source. */
+  var careers = [{% for c in careers %}{"id":{{ c.id|tojson }},"title":{{ c.title|tojson }},"category":{{ c.category|tojson }}}{% if not loop.last %},{% endif %}{% endfor %}];
+
+  var sel = $("career");
+  var cats = {};
+  careers.forEach(function (c) { cats[c.category] = 1; });
+  Object.keys(cats).sort().forEach(function (name) {
+    var g = document.createElement("optgroup");
+    g.label = name;
+    careers.filter(function (c) { return c.category === name; }).forEach(function (c) {
+      var o = document.createElement("option"); o.value = c.id; o.textContent = c.title; g.appendChild(o);
+    });
+    sel.appendChild(g);
+  });
+  if (new URLSearchParams(location.search).get("career")) sel.value = new URLSearchParams(location.search).get("career");
+
+  function toWeeks() {
+    var amount = Number($("amount").value) || 4;
+    var unit = $("unit").value;
+    var weeks = unit === "year" ? amount * 52 : unit === "month" ? amount * 4 : amount;
+    return Math.max(4, Math.min(52, Math.round(weeks)));
+  }
+
+  $("go").addEventListener("click", function () {
+    $("err").hidden = true;
+    fetch("/api/roadmap", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        career_id: sel.value,
+        horizon_weeks: toWeeks()
+      })
+    })
+      .then(function (r) { return r.json().then(function (b) { if (!r.ok) throw new Error(b.detail || "Failed"); return b; }); })
+      .then(render)
+      .catch(function (e) { $("err").textContent = e.message; $("err").hidden = false; });
+  });
+
+  function render(d) {
+    var phases = d.roadmap.phases.map(function (p) {
+      var weeks = [];
+      for (var i = 0; i < Math.min(p.weeks, 10); i++) weeks.push('<span class="week">W' + (i + 1) + " " + esc(p.skills[i % p.skills.length].name) + "</span>");
+      return '<div class="phase">' +
+        '<div class="phase-head"><span class="phase-name">' + esc(p.name) + '</span><span class="phase-meta">' + CL.duration(p.weeks) + "</span></div>" +
+        '<div class="milestone">' + esc(p.milestone) + "</div>" +
+        '<div class="row gap-1 wrapf">' + p.skills.map(function (s) {
+          return '<span class="chip static">' + esc(s.name) + '<span class="pct">' + Math.round(s.importance * 100) + "%</span></span>";
+        }).join("") + "</div>" +
+        '<div class="weeks">' + weeks.join("") + "</div></div>";
+    }).join("");
+
+    var res = d.roadmap.resources.map(function (r) {
+      return '<div class="res"><span class="res-kind">' + esc(r.kind) + "</span><span>" +
+        '<div class="res-title">' + esc(r.title) + "</div>" +
+        '<div class="res-sub">' + esc(r.provider) + " · " + CL.duration(Math.max(1, Math.round(r.hours / 8))) + " · " + esc(r.skill_name) +
+        (r.url ? ' · <a href="' + esc(r.url) + '" target="_blank" rel="noopener">open</a>' : "") + "</div></span></div>";
+    }).join("") || '<div class="dim">No curated resources for this path.</div>';
+
+    $("out").innerHTML =
+      '<section class="card" style="margin-bottom:var(--s-4)"><div class="row between wrapf gap-3">' +
+        "<div><span class='eyebrow'>Plan</span><h3 style='margin-top:4px'>" + esc(d.career.title) + "</h3>" +
+        '<div class="dim" style="font-size:var(--t-sm)">From zero · ' + CL.duration(d.roadmap.total_weeks) + " total</div></div>" +
+        '<a class="btn btn-ghost" href="/analyse?career=' + esc(d.career.id) + '">Refine with my profile →</a>' +
+      "</div></section>" +
+      '<section class="card" style="margin-bottom:var(--s-4)"><h3 style="margin-bottom:var(--s-4)">Phases</h3>' + phases + "</section>" +
+      '<section class="card"><h3 style="margin-bottom:var(--s-4)">Free learning resources</h3>' + res + "</section>";
+  }
+})();
+</script>
+{% endblock %}

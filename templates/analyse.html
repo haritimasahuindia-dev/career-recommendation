@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+{% block title %}Analyse your profile — Student Recommendation{% endblock %}
+{% block description %}Paste your resume and get ranked career matches, skill gaps, a learning roadmap and portfolio projects.{% endblock %}
+
+{% block content %}
+<div class="wrap-wide section-sm">
+  <div class="section-head" style="margin-bottom:var(--s-5)">
+    <span class="eyebrow">Step 1 of 2</span>
+    <h2 style="margin-top:var(--s-2)">Analyse your profile</h2>
+    <p class="lede">Everything runs in this tab. Your text is sent to this local server once, used to score you, then discarded — nothing is stored.</p>
+  </div>
+
+  <div class="tool">
+    <!-- INPUT -->
+    <aside class="card tool-side">
+      <form id="form">
+        <div class="grid split-even" style="gap:var(--s-3)">
+          <label class="field">
+            <span class="label">Student name</span>
+            <input class="input" type="text" id="student" placeholder="e.g. Ananya Sharma" autocomplete="name" />
+          </label>
+          <label class="field">
+            <span class="label">Semester <span class="dim">(optional)</span></span>
+            <input class="input" type="text" id="semester" placeholder="e.g. 5" inputmode="numeric" />
+          </label>
+        </div>
+
+        <label class="field">
+          <span class="label">Resume / CV text</span>
+          <textarea class="textarea" id="resume" rows="10" placeholder="Paste your resume, for example:
+
+SKILLS
+Python, SQL, Pandas, Power BI
+
+PROJECTS
+Built a sales dashboard using Python and PostgreSQL&hellip;
+
+EXPERIENCE
+Data analyst intern &mdash; automated weekly KPI reports&hellip;"></textarea>
+          <span class="field-hint" id="count">0 characters</span>
+        </label>
+
+        <label class="field">
+          <span class="label">Interests &amp; preferences</span>
+          <input class="input" type="text" id="interests" placeholder="e.g. I enjoy visualising data, APIs, machine learning" />
+        </label>
+
+        <div class="grid split-even" style="gap:var(--s-3)">
+          <label class="field">
+            <span class="label">Target career</span>
+            <select class="select" id="career"><option value="">Auto-detect</option></select>
+          </label>
+          <label class="field">
+            <span class="label">Target company</span>
+            <select class="select" id="company"><option value="">None</option></select>
+          </label>
+          <label class="field">
+            <span class="label">Duration</span>
+            <input class="input" type="number" id="amount" value="4" min="1" max="52" />
+          </label>
+          <label class="field">
+            <span class="label">Unit</span>
+            <select class="select" id="unit">
+              <option value="week">Weeks</option>
+              <option value="month" selected>Months</option>
+              <option value="year">Years</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="field">
+          <span class="label">Add skills manually</span>
+          <input class="input" type="text" id="skill-search" placeholder="Search skills&hellip;" style="margin-bottom:var(--s-2)" />
+          <div class="row gap-1 wrapf" id="cats" style="margin-bottom:var(--s-3)"></div>
+          <div class="row gap-1 wrapf" id="chips" style="max-height:190px;overflow-y:auto"></div>
+        </div>
+
+        <button class="btn btn-primary btn-lg" id="go" style="width:100%" type="submit">
+          <span id="go-label">Run analysis</span>
+        </button>
+        <button class="btn btn-text" id="sample" type="button" style="width:100%;margin-top:var(--s-2)">Load a sample profile</button>
+        <div class="alert" id="err" hidden style="margin-top:var(--s-3)"></div>
+      </form>
+    </aside>
+
+    <!-- OUTPUT -->
+    <div class="tool-main">
+      <div class="empty" id="idle">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+          <path d="M3 20h18M6 20V9M11 20V4M16 20v-8M21 20v-5" />
+        </svg>
+        <p><strong>No analysis yet.</strong><br />Fill in your profile on the left and run the analysis.</p>
+      </div>
+
+      <div id="out" hidden class="stack gap-4">
+        <!-- report header -->
+        <div class="card" id="report-head" hidden></div>
+
+        <!-- summary -->
+        <div class="grid g-4" id="summary"></div>
+
+        <!-- skills -->
+        <section class="card">
+          <div class="row between wrapf gap-2" style="margin-bottom:var(--s-4)">
+            <h3>Detected skills</h3>
+            <span class="badge" id="skill-count"></span>
+          </div>
+          <div class="row gap-1 wrapf" id="skills"></div>
+          <details style="margin-top:var(--s-4)">
+            <summary class="mono dim" style="font-size:var(--t-sm);cursor:pointer">Why these skills?</summary>
+            <div id="evidence" style="margin-top:var(--s-3)"></div>
+          </details>
+        </section>
+
+        <!-- matches -->
+        <section class="card">
+          <div class="row between wrapf gap-2" style="margin-bottom:var(--s-4)">
+            <h3>Recommended careers</h3>
+            <span class="badge" id="match-count"></span>
+          </div>
+          <div id="matches"></div>
+        </section>
+
+        <div id="focus"></div>
+
+        <!-- adjacent -->
+        <section class="card">
+          <div class="row between wrapf gap-2" style="margin-bottom:var(--s-4)">
+            <h3>Adjacent skills worth learning</h3>
+            <span class="dim mono" style="font-size:var(--t-xs)">co-occurrence signal</span>
+          </div>
+          <div class="grid g-4" id="adjacent"></div>
+        </section>
+
+        <!-- similar -->
+        <section class="card">
+          <div class="row between wrapf gap-2" style="margin-bottom:var(--s-4)"><h3>Similar careers</h3></div>
+          <div class="row gap-2 wrapf" id="similar"></div>
+        </section>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}<script src="/static/js/analyse.js"></script>{% endblock %}

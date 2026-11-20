@@ -1,0 +1,313 @@
+/* ============================================================
+   Student Recommendation - design tokens, themes, reset, typography
+   ============================================================ */
+
+/* ---------- 1. TOKENS ---------- */
+:root {
+  /* typography */
+  --font-sans: "Plus Jakarta Sans", "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --font-serif: "Instrument Serif", ui-serif, Georgia, serif;
+
+  /* fluid type scale */
+  --t-xs: 0.6875rem;
+  --t-sm: 0.8125rem;
+  --t-base: 0.9375rem;
+  --t-md: 1.0625rem;
+  --t-lg: 1.375rem;
+  --t-xl: 1.875rem;
+  --t-2xl: 2.75rem;
+  --t-3xl: 4rem;
+
+  /* spacing (4px base) */
+  --s-1: 0.25rem;  --s-2: 0.5rem;   --s-3: 0.75rem;  --s-4: 1rem;
+  --s-5: 1.5rem;   --s-6: 2rem;     --s-7: 3rem;     --s-8: 4.5rem;
+
+  /* radii */
+  --r-xs: 6px; --r-sm: 10px; --r-md: 14px; --r-lg: 20px; --r-full: 999px;
+
+  /* motion */
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur: 0.22s;
+
+  /* layout */
+  --nav-h: 64px;
+  --wrap: 1240px;
+  --wrap-wide: 1500px;
+}
+
+/* ---------- 2. THEMES ----------
+   Every theme is light-on-white with a colourful accent. No dark mode by
+   default: this is a student-facing product and white reads as trustworthy
+   and calm rather than as a developer tool. */
+
+/* AURORA - white, indigo/violet with teal support (default) */
+[data-theme="aurora"] {
+  --bg: #f8f9ff;
+  --bg-alt: #eef1fb;
+  --surface: #ffffff;
+  --surface-2: #f4f6fe;
+  --surface-hover: #e9edfc;
+  --line: #dfe4f5;
+  --line-soft: #ecf0fb;
+
+  --fg: #12172e;
+  --fg-mid: #4b5578;
+  --fg-dim: #8089a8;
+
+  --accent: #4f46e5;
+  --accent-2: #0d9488;
+  --accent-3: #9333ea;
+  --accent-fg: #ffffff;
+
+  --ok: #16a34a;
+  --warn: #d97706;
+  --danger: #dc2626;
+  --info: #2563eb;
+
+  --shadow-sm: 0 1px 2px rgba(18,23,46,.06);
+  --shadow: 0 8px 24px -12px rgba(18,23,46,.2);
+  --shadow-lg: 0 28px 60px -30px rgba(18,23,46,.3);
+  --ring: 0 0 0 3px rgba(79,70,229,.18);
+  --nav-bg: rgba(248,249,255,.86);
+  --hero-glow: radial-gradient(900px 460px at 50% -12%, rgba(99,102,241,.16), transparent 70%);
+  --blob-a: rgba(129,140,248,.22);
+  --blob-b: rgba(45,212,191,.18);
+  --blob-c: rgba(232,121,249,.16);
+}
+
+/* CANDY - white, hot pink / coral */
+[data-theme="candy"] {
+  --bg: #fffafc;
+  --bg-alt: #fdeef4;
+  --surface: #ffffff;
+  --surface-2: #fff5f8;
+  --surface-hover: #ffe8ef;
+  --line: #f7d9e4;
+  --line-soft: #fdeef3;
+
+  --fg: #2b1220;
+  --fg-mid: #6e4257;
+  --fg-dim: #a5798c;
+
+  --accent: #db2777;
+  --accent-2: #ea580c;
+  --accent-3: #7c3aed;
+  --accent-fg: #ffffff;
+
+  --ok: #15803d;
+  --warn: #b45309;
+  --danger: #dc2626;
+  --info: #2563eb;
+
+  --shadow-sm: 0 1px 2px rgba(43,18,32,.06);
+  --shadow: 0 8px 24px -12px rgba(219,39,119,.24);
+  --shadow-lg: 0 28px 60px -30px rgba(219,39,119,.32);
+  --ring: 0 0 0 3px rgba(219,39,119,.18);
+  --nav-bg: rgba(255,250,252,.88);
+  --hero-glow: radial-gradient(900px 460px at 50% -12%, rgba(236,72,153,.18), transparent 70%);
+  --blob-a: rgba(251,146,180,.28);
+  --blob-b: rgba(251,191,36,.22);
+  --blob-c: rgba(167,139,250,.2);
+}
+
+/* MINT - white, emerald / teal */
+[data-theme="mint"] {
+  --bg: #f6fdfa;
+  --bg-alt: #e9f8f1;
+  --surface: #ffffff;
+  --surface-2: #f0fbf6;
+  --surface-hover: #e0f5eb;
+  --line: #cfeee0;
+  --line-soft: #e6f7ee;
+
+  --fg: #0c2a20;
+  --fg-mid: #3d6b5c;
+  --fg-dim: #79a697;
+
+  --accent: #059669;
+  --accent-2: #0284c7;
+  --accent-3: #65a30d;
+  --accent-fg: #ffffff;
+
+  --ok: #15803d;
+  --warn: #d97706;
+  --danger: #dc2626;
+  --info: #0284c7;
+
+  --shadow-sm: 0 1px 2px rgba(12,42,32,.06);
+  --shadow: 0 8px 24px -12px rgba(5,150,105,.24);
+  --shadow-lg: 0 28px 60px -30px rgba(5,150,105,.3);
+  --ring: 0 0 0 3px rgba(5,150,105,.18);
+  --nav-bg: rgba(246,253,250,.88);
+  --hero-glow: radial-gradient(900px 460px at 50% -12%, rgba(16,185,129,.18), transparent 70%);
+  --blob-a: rgba(52,211,153,.26);
+  --blob-b: rgba(56,189,248,.2);
+  --blob-c: rgba(163,230,53,.18);
+}
+
+/* SKY - white, azure / cyan */
+[data-theme="sky"] {
+  --bg: #f7fcff;
+  --bg-alt: #e8f4fe;
+  --surface: #ffffff;
+  --surface-2: #f2f9ff;
+  --surface-hover: #e2f1fd;
+  --line: #d5e8f7;
+  --line-soft: #e8f4fd;
+
+  --fg: #0b2233;
+  --fg-mid: #3d6180;
+  --fg-dim: #7ba0ba;
+
+  --accent: #0284c7;
+  --accent-2: #4f46e5;
+  --accent-3: #0891b2;
+  --accent-fg: #ffffff;
+
+  --ok: #16a34a;
+  --warn: #d97706;
+  --danger: #dc2626;
+  --info: #0284c7;
+
+  --shadow-sm: 0 1px 2px rgba(11,34,51,.06);
+  --shadow: 0 8px 24px -12px rgba(2,132,199,.24);
+  --shadow-lg: 0 28px 60px -30px rgba(2,132,199,.3);
+  --ring: 0 0 0 3px rgba(2,132,199,.18);
+  --nav-bg: rgba(247,252,255,.88);
+  --hero-glow: radial-gradient(900px 460px at 50% -12%, rgba(56,189,248,.2), transparent 70%);
+  --blob-a: rgba(125,211,252,.3);
+  --blob-b: rgba(129,140,248,.2);
+  --blob-c: rgba(167,243,208,.22);
+}
+
+/* PAPER - clean white-first */
+[data-theme="paper"] {
+  --bg: #ffffff;
+  --bg-alt: #f8faff;
+  --surface: #ffffff;
+  --surface-2: #fbfdff;
+  --surface-hover: #f2f7ff;
+  --line: rgba(15,23,42,.08);
+  --line-soft: rgba(15,23,42,.06);
+
+  --fg: #0f172a;
+  --fg-mid: #334155;
+  --fg-dim: #64748b;
+
+  --accent: #3b82f6;
+  --accent-2: #1d4ed8;
+  --accent-3: #2563eb;
+  --accent-fg: #ffffff;
+
+  --ok: #16a34a;
+  --warn: #b45309;
+  --danger: #b91c1c;
+  --info: #1d4ed8;
+
+  --shadow-sm: 0 1px 1px rgba(15,23,42,.06);
+  --shadow: 0 10px 40px -24px rgba(15,23,42,.25);
+  --shadow-lg: 0 40px 120px -40px rgba(15,23,42,.35);
+  --ring: 0 0 0 3px rgba(59,130,246,.20);
+  --nav-bg: rgba(255,255,255,.92);
+  --hero-glow: radial-gradient(900px 460px at 50% -12%, rgba(59,130,246,.12), transparent 70%);
+  --blob-a: rgba(59,130,246,.14);
+  --blob-b: rgba(99,102,241,.10);
+  --blob-c: rgba(14,165,233,.10);
+}
+
+/* serif display only in paper theme */
+[data-theme="paper"] { --display: var(--font-serif); }
+:root { --display: var(--font-sans); }
+
+/* ---------- 3. RESET ---------- */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+
+body {
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  font-size: var(--t-base);
+  line-height: 1.65;
+  font-feature-settings: "cv02", "cv03", "cv04", "ss01";
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  transition: background-color var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+
+img, svg { display: block; max-width: 100%; }
+button, input, select, textarea { font: inherit; color: inherit; }
+a { color: inherit; text-decoration: none; }
+ul, ol { list-style: none; }
+
+::selection { background: var(--accent); color: var(--accent-fg); }
+
+/* ---------- 4. TYPOGRAPHY ---------- */
+h1, h2, h3, h4, h5 {
+  font-family: var(--display);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.025em;
+}
+h1 { font-size: clamp(2rem, 5vw, var(--t-3xl)); letter-spacing: -0.035em; }
+h2 { font-size: clamp(1.5rem, 3.2vw, var(--t-2xl)); letter-spacing: -0.03em; }
+h3 { font-size: var(--t-lg); }
+h4 { font-size: var(--t-md); }
+p { color: var(--fg-mid); }
+
+.eyebrow {
+  font-size: var(--t-xs);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-family: var(--font-mono);
+}
+
+.lede { font-size: var(--t-md); color: var(--fg-mid); max-width: 62ch; }
+.mono { font-family: var(--font-mono); font-size: 0.86em; }
+.dim { color: var(--fg-dim); }
+
+/* ---------- 5. LAYOUT ---------- */
+.wrap { width: 100%; max-width: var(--wrap); margin-inline: auto; padding-inline: var(--s-5); }
+.wrap-wide { width: 100%; max-width: var(--wrap-wide); margin-inline: auto; padding-inline: var(--s-5); }
+.section { padding-block: var(--s-8); }
+.section-sm { padding-block: var(--s-6); }
+.section-head { margin-bottom: var(--s-6); }
+.section-head h2 { margin-block: var(--s-2) var(--s-3); }
+
+.stack { display: flex; flex-direction: column; }
+.row { display: flex; align-items: center; }
+.between { justify-content: space-between; }
+.wrapf { flex-wrap: wrap; }
+.gap-1 { gap: var(--s-1); } .gap-2 { gap: var(--s-2); } .gap-3 { gap: var(--s-3); }
+.gap-4 { gap: var(--s-4); } .gap-5 { gap: var(--s-5); } .gap-6 { gap: var(--s-6); }
+.grow { flex: 1; }
+.grid { display: grid; gap: var(--s-4); }
+.g-2 { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+.g-3 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+.g-4 { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+.hide { display: none !important; }
+
+/* ---------- 6. ANIMATION ---------- */
+@keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+.rise { animation: rise 0.55s var(--ease) backwards; }
+@keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+.fade { animation: fade 0.4s var(--ease) backwards; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ---------- 7. SCROLLBAR ---------- */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--line); border-radius: var(--r-full); border: 2px solid var(--bg); }
+::-webkit-scrollbar-thumb:hover { background: var(--fg-dim); }

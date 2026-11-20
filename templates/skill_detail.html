@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}{{ skill.name }} — Skill library — Student Recommendation{% endblock %}
+{% block description %}Where {{ skill.name }} is used, which projects prove it and free resources to learn it.{% endblock %}
+
+{% block content %}
+<div class="wrap-wide section-sm">
+  <a class="btn btn-text btn-sm" href="/skills" style="margin-bottom:var(--s-4)">&larr; All skills</a>
+
+  <div class="grid split-main" style="gap:var(--s-5)">
+    <div class="stack gap-4">
+      <div>
+        <div class="row gap-2 wrapf" style="margin-bottom:var(--s-3)">
+          <span class="badge badge-accent">{{ skill.category }}</span>
+          <span class="badge">{{ skill.careers|length }} careers</span>
+        </div>
+        <h1 style="font-size:clamp(1.75rem,4vw,2.75rem)">{{ skill.name }}</h1>
+        {% if skill.aliases %}
+        <p class="dim" style="font-size:var(--t-sm);margin-top:var(--s-3)">Also detected as: {{ skill.aliases|join(' · ') }}</p>
+        {% endif %}
+      </div>
+
+      <section class="card">
+        <h3 style="margin-bottom:var(--s-4)">Careers that use {{ skill.name }}</h3>
+        {% for c in skill.careers %}
+        <div style="margin-bottom:var(--s-3)">
+          <div class="row between gap-2" style="margin-bottom:5px">
+            <a class="kv" href="/careers/{{ c.id }}" style="font-size:var(--t-sm);font-weight:500">{{ c.title }}</a>
+            <span class="mono dim" style="font-size:var(--t-xs)">{{ '%.2f'|format(c.weight) }}</span>
+          </div>
+          <div class="meter"><i style="width:{{ (c.weight * 100)|round|int }}%"></i></div>
+        </div>
+        {% else %}
+        <p class="dim" style="font-size:var(--t-sm)">Not yet mapped to a role.</p>
+        {% endfor %}
+      </section>
+
+      {% if skill.projects %}
+      <section class="card">
+        <h3 style="margin-bottom:var(--s-4)">Projects that prove {{ skill.name }}</h3>
+        <div class="grid g-3">
+          {% for p in skill.projects %}
+          <a class="card card-tight proj" href="/projects/{{ p.id }}" style="display:block">
+            <h4>{{ p.title }}</h4>
+            <p style="font-size:var(--t-sm)">{{ p.summary }}</p>
+            <div class="proj-foot">
+              <span class="diff diff-{{ p.difficulty }}">{{ p.difficulty }}</span>
+              <span class="mono dim" style="font-size:var(--t-xs)">~{{ p.hours }}h</span>
+            </div>
+          </a>
+          {% endfor %}
+        </div>
+      </section>
+      {% endif %}
+    </div>
+
+    <aside class="stack gap-4">
+      <div class="card">
+        <h4 style="margin-bottom:var(--s-3)">Analyse your profile</h4>
+        <p class="dim" style="font-size:var(--t-sm);margin-bottom:var(--s-4)">See if you already have {{ skill.name }} and where it takes you.</p>
+        <a class="btn btn-primary" style="width:100%" href="/analyse">Analyse free</a>
+        <a class="btn btn-ghost" style="width:100%;margin-top:var(--s-2)" href="/api/skills/{{ skill.id }}" target="_blank" rel="noopener">View as JSON &rarr;</a>
+      </div>
+
+      {% if skill.resources %}
+      <div class="card">
+        <h4 style="margin-bottom:var(--s-4)">Learn {{ skill.name }}</h4>
+        {% for r in skill.resources %}
+        <div class="res">
+          <span class="res-kind">{{ r.kind }}</span>
+          <span>
+            <div class="res-title">{{ r.title }}</div>
+            <div class="res-sub">{{ r.provider }} · ~{{ r.hours }}h
+              {% if r.url %} · <a href="{{ r.url }}" target="_blank" rel="noopener">open</a>{% endif %}
+            </div>
+          </span>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </aside>
+  </div>
+</div>
+{% endblock %}

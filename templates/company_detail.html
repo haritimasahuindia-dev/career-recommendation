@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+{% block title %}{{ company.name }} — roles and skills they hire for{% endblock %}
+{% block description %}{{ company.name }} hires for {{ roles|length }} roles. See the skills they weight above the generic baseline.{% endblock %}
+
+{% block content %}
+<div class="wrap section-sm">
+  <a class="back-link" href="/companies">&larr; All companies</a>
+
+  <div class="company-hero card">
+    <div class="company-head">
+      <span class="company-logo lg" aria-hidden="true">{{ company.name[:2]|upper }}</span>
+      <div class="grow">
+        <div class="row gap-2 wrapf" style="margin-bottom:6px">
+          <span class="badge badge-accent">{{ company.industry }}</span>
+          <span class="badge">{{ company.location }}</span>
+          <span class="badge">{{ company.size }} employees</span>
+        </div>
+        <h1 style="font-size:clamp(1.5rem,3.5vw,2.25rem);margin:0">{{ company.name }}</h1>
+        <p class="lede" style="margin-top:var(--s-3)">{{ company.description }}</p>
+      </div>
+    </div>
+
+    <div class="row gap-2 wrapf" style="margin-top:var(--s-5)">
+      <a class="btn btn-primary" href="/analyse?company={{ company.id }}">Check my fit at {{ company.name }}</a>
+      <a class="btn btn-ghost" href="/api/companies/{{ company.id }}" target="_blank" rel="noopener">View JSON</a>
+    </div>
+
+    {% if company.culture %}
+    <div class="row gap-1 wrapf" style="margin-top:var(--s-5)">
+      {% for c in company.culture %}<span class="chip static">{{ c }}</span>{% endfor %}
+    </div>
+    {% endif %}
+  </div>
+
+  <section class="card" style="margin-top:var(--s-5)" id="fit-card">
+    <div class="section-head" style="margin-bottom:var(--s-4)">
+      <span class="eyebrow">Backend powered</span>
+      <h3 style="margin-top:var(--s-2);font-size:var(--t-lg)">Check your fit at {{ company.name }}</h3>
+      <p class="dim" style="font-size:var(--t-sm)">Paste your skills or a short resume summary. The API scores your readiness for every role {{ company.name }} hires for and flags the differentiators you are missing.</p>
+    </div>
+    <textarea class="input" id="fit-resume" rows="4" placeholder="e.g. SKILLS: Python, React, SQL&#10;PROJECTS: built a dashboard with pandas and Power BI"></textarea>
+    <div class="row gap-2 wrapf" style="margin-top:var(--s-3)">
+      <button class="btn btn-primary" id="fit-go">Check fit</button>
+      <a class="btn btn-ghost" href="/analyse?company={{ company.id }}">Full profile analysis &rarr;</a>
+    </div>
+    <div class="alert" id="fit-err" hidden style="margin-top:var(--s-3)"></div>
+    <div id="fit-out" style="margin-top:var(--s-4)"></div>
+  </section>
+
+  {% if extra_skills %}
+  <section class="section-sm">
+    <div class="section-head">
+      <span class="eyebrow">Differentiators</span>
+      <h2 style="margin-top:var(--s-2);font-size:clamp(1.25rem,2.5vw,1.6rem)">Weighted above the generic baseline</h2>
+      <p class="lede">These are the skills {{ company.name }} values more heavily than the standard role definition. Closing them first is what moves you out of the generic applicant pool.</p>
+    </div>
+    <div class="grid g-3">
+      {% for sk in extra_skills %}
+      <a class="card skill-mini" href="/skills">
+        <div class="row between" style="margin-bottom:var(--s-2)">
+          <strong style="font-size:var(--t-sm)">{{ sk.name }}</strong>
+          <span class="badge badge-accent">+{{ '%.2f'|format(sk.weight) }}</span>
+        </div>
+        <div class="meter"><i style="width:{{ (sk.weight * 200)|round|int }}%"></i></div>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  <section class="section-sm">
+    <div class="section-head">
+      <span class="eyebrow">Open roles</span>
+      <h2 style="margin-top:var(--s-2);font-size:clamp(1.25rem,2.5vw,1.6rem)">{{ company.name }} hires for {{ roles|length }} role{{ 's' if roles|length != 1 }}</h2>
+      <p class="lede">Sorted by demand. Tap any role to see the full requirement breakdown and build a roadmap for it.</p>
+    </div>
+
+    <div class="grid g-2">
+      {% for r in roles %}
+      <a class="card c-card" href="/careers/{{ r.id }}">
+        <div class="row between wrapf gap-2" style="margin-bottom:var(--s-3)">
+          <h3 style="font-size:var(--t-md)">{{ r.title }}</h3>
+          <span class="badge">{{ r.category }}</span>
+        </div>
+        <p class="dim" style="font-size:var(--t-sm)">{{ r.outlook }}</p>
+        <div class="row gap-1 wrapf" style="margin-top:var(--s-3)">
+          {% for sk in r.skills %}<span class="chip static">{{ sk.name }}</span>{% endfor %}
+          {% if r.skills|length > 6 %}<span class="chip static">+{{ r.skills|length - 6 }} more</span>{% endif %}
+        </div>
+        <div class="row between" style="margin-top:var(--s-4)">
+          <span class="dim mono" style="font-size:var(--t-xs)">Demand {{ r.demand }}/5</span>
+          <span class="dim" style="font-size:var(--t-xs)">View role &rarr;</span>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function () {
+  "use strict";
+  var $ = function (id) { return document.getElementById(id); };
+  var esc = function (s) {
+    return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  };
+  var pct = function (v) { return Math.round((v || 0) * 100) + "%"; };
+  var card = $("fit-card");
+  if (!card) return;
+
+  $("fit-go").addEventListener("click", function () {
+    var btn = this;
+    $("fit-err").hidden = true;
+    var text = $("fit-resume").value.trim();
+    if (!text) { $("fit-err").textContent = "Paste some skills or a resume summary first."; $("fit-err").hidden = false; return; }
+    btn.disabled = true;
+    fetch("/api/companies/{{ company.id }}/fit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ resume_text: text })
+    })
+      .then(function (r) { return r.json().then(function (b) { if (!r.ok) throw new Error(b.detail || "Failed"); return b; }); })
+      .then(render)
+      .catch(function (e) { $("fit-err").textContent = e.message; $("fit-err").hidden = false; })
+      .then(function () { btn.disabled = false; });
+  });
+
+  function render(d) {
+    var ex = d.extra_skills.map(function (s) {
+      return '<span class="badge ' + (s.covered ? "badge-ok" : "badge-warn") + '">' +
+        (s.covered ? "✓" : "○") + " " + esc(s.name) + " · " + pct(s.current) + "</span>";
+    }).join("") || '<span class="dim">No differentiators listed.</span>';
+
+    var roles = d.roles.map(function (r) {
+      var gaps = r.top_gaps.map(function (g) { return esc(g.name); }).join(", ") || "none";
+      return '<div class="kv"><span class="k">' + esc(r.title) +
+        '</span><span class="v">' + pct(r.readiness) + " · " + esc(r.readiness_label) + "</span></div>" +
+        '<div class="note">Biggest gaps: ' + gaps + "</div>";
+    }).join("") || '<div class="dim">No roles listed.</div>';
+
+    $("fit-out").innerHTML =
+      '<div class="grid g-3" style="margin-bottom:var(--s-4)">' +
+        '<div class="card card-tight"><div class="eyebrow">Overall fit</div><div style="font-size:1.5rem;font-weight:800">' + pct(d.overall_fit) + '</div><div class="dim" style="font-size:var(--t-xs)">' + esc(d.fit_label) + '</div></div>' +
+        '<div class="card card-tight"><div class="eyebrow">Best role</div><div style="font-size:var(--t-sm);font-weight:700">' + esc(d.best_role || "—") + '</div></div>' +
+        '<div class="card card-tight"><div class="eyebrow">Differentiators</div><div style="font-size:1.5rem;font-weight:800">' + pct(d.differentiator_score) + '</div></div>' +
+      "</div>" +
+      '<div class="card"><h4 style="margin-bottom:var(--s-3)">Skills ' + esc(d.company.name) + ' weights above baseline</h4>' +
+        '<div class="row gap-1 wrapf">' + ex + "</div></div>" +
+      '<div class="card" style="margin-top:var(--s-3)"><h4 style="margin-bottom:var(--s-3)">Readiness by role</h4>' + roles + "</div>";
+  }
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Project blueprints — Student Recommendation{% endblock %}
+{% block description %}Portfolio-ready project ideas, each mapped to the exact skills it proves.{% endblock %}
+
+{% block content %}
+<div class="wrap-wide section-sm">
+  <div class="section-head">
+    <span class="eyebrow">Portfolio</span>
+    <h2 style="margin-top:var(--s-2)">Project blueprints</h2>
+    <p class="lede">{{ projects|length }} builds. Each one lists the skills it demonstrates — pick the projects that cover your gaps and you can prove the skill on paper instead of just claiming it.</p>
+  </div>
+
+  <div class="filters" data-filter-group="#grid" data-filter-group-count="#count" data-filter-group-empty="#empty">
+    <input class="input" type="text" data-filter="#grid" data-filter-count="#count" data-filter-empty="#empty" placeholder="Search projects or skills…" />
+    <span class="chip on" data-filter-chip="all">All</span>
+    {% for d in difficulties %}
+    <span class="chip" data-filter-chip="{{ d }}">{{ d }}</span>
+    {% endfor %}
+  </div>
+
+  <div class="row between wrapf gap-2" style="margin-bottom:var(--s-4)">
+    <span class="dim mono" style="font-size:var(--t-xs)"><span id="count">{{ projects|length }}</span> projects shown</span>
+    <a class="btn btn-text btn-sm" href="/api/projects" target="_blank" rel="noopener">View as JSON →</a>
+  </div>
+
+  <div class="grid g-3" id="grid">
+    {% for p in projects %}
+    <a class="card proj" href="/projects/{{ p.id }}" data-cat="{{ p.difficulty }}"
+       data-search="{{ p.title }} {{ p.summary }} {{ p.skill_names|join(' ') }}">
+      <div class="row between gap-2">
+        <span class="diff diff-{{ p.difficulty }}">{{ p.difficulty }}</span>
+        <span class="mono dim" style="font-size:var(--t-xs)">~{{ p.hours }}h</span>
+      </div>
+      <h4>{{ p.title }}</h4>
+      <p>{{ p.summary }}</p>
+      <div class="row gap-1 wrapf">
+        {% for sn in p.skill_names %}<span class="chip static">{{ sn }}</span>{% endfor %}
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+
+  <div class="empty hide" id="empty" style="margin-top:var(--s-5)">No projects match that filter.</div>
+</div>
+{% endblock %}

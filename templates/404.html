@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Page not found - Student Recommendation{% endblock %}
+{% block description %}The page you were looking for does not exist.{% endblock %}
+
+{% block main %}
+<section class="section">
+  <div class="wrap">
+    <div class="empty" style="max-width:620px;margin-inline:auto;text-align:center">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="12" cy="12" r="9"/>
+        <path d="M9.2 9.3a2.9 2.9 0 0 1 5.6.9c0 1.9-2.8 2.4-2.8 4"/>
+        <path d="M12 17.4h.01"/>
+      </svg>
+      <h1 style="font-size:clamp(2rem,5vw,3rem);letter-spacing:-.03em;margin-bottom:var(--s-3)">Page not found</h1>
+      <p style="margin-bottom:var(--s-5)">That link does not lead anywhere. It may have been renamed, or the address might have a typo.</p>
+      <div class="row gap-2 wrapf" style="justify-content:center">
+        <a class="btn btn-primary" href="/">Back to home</a>
+        <a class="btn" href="/analyse">Run an analysis</a>
+        <a class="btn btn-text" href="/careers">Browse careers</a>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

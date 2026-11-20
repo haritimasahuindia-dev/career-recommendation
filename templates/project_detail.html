@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}{{ project.title }} — Project blueprints — Student Recommendation{% endblock %}
+{% block description %}{{ project.summary }}{% endblock %}
+
+{% block content %}
+<div class="wrap-wide section-sm">
+  <a class="btn btn-text btn-sm" href="/projects" style="margin-bottom:var(--s-4)">&larr; All projects</a>
+
+  <div class="grid split-main" style="gap:var(--s-5)">
+    <div class="stack gap-4">
+      <div>
+        <div class="row gap-2 wrapf" style="margin-bottom:var(--s-3)">
+          <span class="diff diff-{{ project.difficulty }}">{{ project.difficulty }}</span>
+          <span class="mono dim" style="font-size:var(--t-xs)">~{{ project.hours }}h</span>
+        </div>
+        <h1 style="font-size:clamp(1.75rem,4vw,2.75rem)">{{ project.title }}</h1>
+        <p class="lede" style="margin-top:var(--s-3)">{{ project.summary }}</p>
+      </div>
+
+      <section class="card">
+        <h3 style="margin-bottom:var(--s-4)">Skills this project proves</h3>
+        <div class="row gap-1 wrapf">
+          {% for s in project.skills %}
+          <a class="chip" href="/skills/{{ s.id }}">{{ s.name }}</a>
+          {% endfor %}
+        </div>
+      </section>
+    </div>
+
+    <aside class="stack gap-4">
+      <div class="card">
+        <h4 style="margin-bottom:var(--s-3)">Find your gaps</h4>
+        <p class="dim" style="font-size:var(--t-sm);margin-bottom:var(--s-4)">See which of these skills you already have and which ones to build next.</p>
+        <a class="btn btn-primary" style="width:100%" href="/analyse">Analyse my profile</a>
+        <a class="btn btn-ghost" style="width:100%;margin-top:var(--s-2)" href="/api/projects/{{ project.id }}" target="_blank" rel="noopener">View as JSON &rarr;</a>
+      </div>
+    </aside>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}Target companies — Student Recommendation{% endblock %}
+{% block description %}See which roles each employer hires for and the extra skills they weight above the generic baseline.{% endblock %}
+
+{% block content %}
+<div class="wrap-wide section-sm">
+  <div class="section-head">
+    <span class="eyebrow">Employers</span>
+    <h2 style="margin-top:var(--s-2)">Where to aim</h2>
+    <p class="lede">{{ companies|length }} real employers across {{ industries|length }} industries. Each one lists the roles they hire for plus the skills they weight <em>above</em> the generic requirement. Fill those in and you stand out from the generic applicant pool.</p>
+  </div>
+
+  <div class="filters" data-filter-group="#company-grid" data-filter-group-count="#company-count" data-filter-group-empty="#company-empty">
+    <input class="input" type="text" data-filter="#company-grid" data-filter-count="#company-count" data-filter-empty="#company-empty" placeholder="Search a company, role or skill." />
+    <span class="chip on" data-filter-chip="all">All</span>
+    {% for ind in industries %}
+    <span class="chip" data-filter-chip="{{ ind }}">{{ ind }}</span>
+    {% endfor %}
+    <span class="grow"></span>
+    <span class="dim mono" style="font-size:var(--t-xs)"><span id="company-count">{{ companies|length }}</span> companies shown</span>
+    <a class="btn btn-text btn-sm" href="/api/companies" target="_blank" rel="noopener">View as JSON →</a>
+  </div>
+
+  <div class="grid g-3" id="company-grid">
+    {% for co in companies %}
+    <div class="card company-card"
+         data-cat="{{ co.industry }}"
+         data-search="{{ co.name }} {{ co.industry }} {{ co.location }} {{ co.description }} {{ co.culture|join(' ') }} {% for cid in co.hiring %}{{ career_titles[cid] }} {% endfor %}"
+         data-title="{{ co.name|lower }}">
+      <div class="company-head">
+        <span class="company-logo" aria-hidden="true">{{ co.name[:2]|upper }}</span>
+        <div class="grow">
+          <h3 style="font-size:var(--t-md)">{{ co.name }}</h3>
+          <div class="dim" style="font-size:var(--t-xs)">{{ co.location }}</div>
+        </div>
+      </div>
+
+      <div class="row between wrapf gap-2" style="margin-bottom:var(--s-3)">
+        <span class="badge badge-accent">{{ co.industry }}</span>
+        <span class="dim mono" style="font-size:var(--t-xs)">{{ co.size }} employees</span>
+      </div>
+
+      <p style="font-size:var(--t-sm)">{{ co.description }}</p>
+
+      <div class="company-block">
+        <span class="eyebrow" style="font-size:.6rem">Hires for</span>
+        <div class="row gap-1 wrapf" style="margin-top:7px">
+          {% for cid in co.hiring %}
+          <a class="chip" href="/careers/{{ cid }}">{{ career_titles[cid] }}</a>
+          {% endfor %}
+        </div>
+      </div>
+
+      {% if co.extra_skills %}
+      <div class="company-block">
+        <span class="eyebrow" style="font-size:.6rem">Weighted above baseline</span>
+        <div class="row gap-1 wrapf" style="margin-top:7px">
+          {% for sk in co.extra_skills %}
+          <span class="badge badge-accent">{{ sk.name }} · {{ '%.2f'|format(sk.weight) }}</span>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      {% if co.culture %}
+      <div class="row gap-1 wrapf" style="margin-top:var(--s-4)">
+        {% for c in co.culture %}<span class="chip static">{{ c }}</span>{% endfor %}
+      </div>
+      {% endif %}
+
+      <div class="company-actions">
+        <a class="btn btn-ghost btn-sm" href="/analyse?company={{ co.id }}">Check my fit</a>
+        <a class="btn btn-ghost btn-sm" href="/companies/{{ co.id }}">Details</a>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="empty hide" id="company-empty" style="margin-top:var(--s-5)">No companies match that filter.</div>
+</div>
+{% endblock %}

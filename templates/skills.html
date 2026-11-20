@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Skill library — Student Recommendation{% endblock %}
+{% block description %}Browse 97 canonical skills, their categories, aliases and which careers depend on each one.{% endblock %}
+
+{% block content %}
+<div class="wrap-wide section-sm">
+  <div class="section-head">
+    <span class="eyebrow">Knowledge base</span>
+    <h2 style="margin-top:var(--s-2)">Skill library</h2>
+    <p class="lede">{{ skills|length }} canonical skills across {{ categories|length }} categories. <em>Demand</em> is how many careers list the skill with a weight of 0.6 or above — that is what makes a skill worth learning.</p>
+  </div>
+
+  <div class="filters" data-filter-group="#grid" data-filter-group-count="#count" data-filter-group-empty="#empty">
+    <input class="input" type="text" data-filter="#grid" data-filter-count="#count" data-filter-empty="#empty" placeholder="Search skills or aliases (e.g. k8s, node, figma)…" />
+    <span class="chip on" data-filter-chip="all">All</span>
+    {% for c in categories %}
+    <span class="chip" data-filter-chip="{{ c }}">{{ c }}</span>
+    {% endfor %}
+  </div>
+
+  <div class="row between wrapf gap-2" style="margin-bottom:var(--s-4)">
+    <span class="dim mono" style="font-size:var(--t-xs)"><span id="count">{{ skills|length }}</span> skills shown</span>
+    <a class="btn btn-text btn-sm" href="/api/skills" target="_blank" rel="noopener">View as JSON →</a>
+  </div>
+
+  <div class="grid g-4" id="grid">
+    {% for s in skills %}
+      <a class="card card-hover" id="{{ s.id }}" href="/skills/{{ s.id }}" data-cat="{{ s.category }}"
+         data-search="{{ s.name }} {{ s.category }} {{ s.aliases|join(' ') }} {{ s.keywords|join(' ') }}"
+         style="display:flex;flex-direction:column;gap:var(--s-2)">
+      <div class="row between gap-2">
+        <strong style="font-size:var(--t-base);letter-spacing:-.01em">{{ s.name }}</strong>
+        <span class="badge {{ 'badge-ok' if s.demand >= 8 else 'badge-warn' if s.demand >= 3 }}">{{ s.demand }}</span>
+      </div>
+      <span class="badge" style="align-self:flex-start">{{ s.category }}</span>
+      {% if s.aliases %}
+      <div class="dim mono" style="font-size:var(--t-xs);line-height:1.6">also: {{ s.aliases[:4]|join(', ') }}</div>
+      {% endif %}
+      <div class="dim" style="font-size:var(--t-xs);margin-top:auto;padding-top:var(--s-2)">
+        {% if s.careers %}{{ s.careers[:3]|map(attribute='title')|join(' · ') }}{% if s.careers|length > 3 %} +{{ s.careers|length - 3 }} more{% endif %}
+        {% else %}Not yet mapped to a role{% endif %}
+      </div>
+      </a>
+    {% endfor %}
+  </div>
+
+  <div class="empty hide" id="empty" style="margin-top:var(--s-5)">No skills match that filter.</div>
+</div>
+{% endblock %}

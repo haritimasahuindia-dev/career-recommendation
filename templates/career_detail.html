@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% block title %}{{ career.title }} — Student Recommendation{% endblock %}
+{% block description %}{{ career.description }}{% endblock %}
+
+{% block content %}
+<div class="wrap-wide section-sm">
+  <a class="btn btn-text btn-sm" href="/careers" style="margin-bottom:var(--s-4)">&larr; All careers</a>
+
+  <div class="grid split-main" style="gap:var(--s-5)">
+    <!-- main -->
+    <div class="stack gap-4">
+      <div>
+        <div class="row gap-2 wrapf" style="margin-bottom:var(--s-3)">
+          <span class="badge badge-accent">{{ career.category }}</span>
+          <span class="badge">demand {{ career.demand }}/5</span>
+        </div>
+        <h1 style="font-size:clamp(1.75rem,4vw,2.75rem)">{{ career.title }}</h1>
+        <p class="lede" style="margin-top:var(--s-3)">{{ career.description }}</p>
+      </div>
+
+      <section class="card">
+        <h3 style="margin-bottom:var(--s-4)">Required skills &amp; weight</h3>
+        {% for s in career.skills %}
+        <div style="margin-bottom:var(--s-3)">
+          <div class="row between gap-2" style="margin-bottom:5px">
+            <span style="font-size:var(--t-sm);font-weight:500">{{ s.name }}</span>
+            <span class="mono dim" style="font-size:var(--t-xs)">{{ '%.2f'|format(s.weight) }}{% if s.weight >= 0.9 %} · core{% elif s.weight >= 0.6 %} · expected{% else %} · bonus{% endif %}</span>
+          </div>
+          <div class="meter"><i style="width:{{ (s.weight * 100)|round|int }}%"></i></div>
+        </div>
+        {% endfor %}
+      </section>
+
+      <section class="card">
+        <h3 style="margin-bottom:var(--s-4)">What you'll actually do</h3>
+        {% for r in career.responsibilities %}
+        <div class="kv"><span class="k">{{ r }}</span></div>
+        {% endfor %}
+      </section>
+
+      {% if career.styles %}
+      <section class="card">
+        <h3 style="margin-bottom:var(--s-4)">Working style</h3>
+        <div class="row gap-1 wrapf">
+          {% for s in career.styles %}<span class="chip static">{{ s }}</span>{% endfor %}
+        </div>
+        <h3 style="margin:var(--s-5) 0 var(--s-4)">Outlook</h3>
+        <p style="font-size:var(--t-sm)">{{ career.outlook }}</p>
+      </section>
+      {% endif %}
+
+      {% if career.projects %}
+      <section class="card">
+        <div class="row between wrapf gap-2" style="margin-bottom:var(--s-4)">
+          <h3>Projects that prove this role</h3>
+          <a class="btn btn-text btn-sm" href="/projects">All projects &larr;</a>
+        </div>
+        <div class="grid g-3">
+          {% for p in career.projects %}
+          <div class="card card-tight proj">
+            <h4>{{ p.title }}</h4>
+            <p style="font-size:var(--t-sm)">{{ p.summary }}</p>
+            <div class="row gap-1 wrapf">
+              {% for sid in p.skill_ids %}<span class="chip static">{{ skill_names[sid] }}</span>{% endfor %}
+            </div>
+            <div class="proj-foot">
+              <span class="diff diff-{{ p.difficulty }}">{{ p.difficulty }}</span>
+              <span class="mono dim" style="font-size:var(--t-xs)">~{{ p.hours }}h</span>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </section>
+      {% endif %}
+    </div>
+
+    <!-- sidebar -->
+    <aside class="stack gap-4">
+      <div class="card">
+        <h4 style="margin-bottom:var(--s-3)">Check your fit</h4>
+        <p class="dim" style="font-size:var(--t-sm);margin-bottom:var(--s-4)">See your readiness for this specific role against your current profile.</p>
+        <a class="btn btn-primary" style="width:100%" href="/analyse?career={{ career.id }}">Analyse my fit</a>
+        <a class="btn btn-ghost" style="width:100%;margin-top:var(--s-2)" href="/roadmap?career={{ career.id }}">Build roadmap</a>
+      </div>
+
+      {% if career.companies %}
+      <div class="card">
+        <h4 style="margin-bottom:var(--s-4)">Companies hiring this role</h4>
+        {% for co in career.companies %}
+        <a class="kv" href="/companies#{{ co.id }}" style="display:flex">
+          <span class="k">{{ co.name }}</span>
+          <span class="v">{{ co.industry }}</span>
+        </a>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      <div class="card">
+        <h4 style="margin-bottom:var(--s-4)">Related skills</h4>
+        <div class="row gap-1 wrapf">
+          {% for s in related %}
+          <a class="chip" href="/skills#{{ s.id }}">{{ s.name }}</a>
+          {% endfor %}
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>
+{% endblock %}

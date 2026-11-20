@@ -1,0 +1,238 @@
+{% extends "base.html" %}
+{% block title %}Student Recommendation — Know exactly which career fits your skills{% endblock %}
+{% block description %}Paste your resume and get AI-ranked career matches, a prioritised skill-gap analysis, a week-by-week learning roadmap and portfolio projects that close those gaps.{% endblock %}
+
+{% block content %}
+<!-- HERO -->
+<section class="hero">
+  <div class="blob-decor" aria-hidden="true"><i></i><i></i><i></i></div>
+  <div class="wrap-wide hero-inner hero-split">
+    <div class="rise">
+      <span class="eyebrow">Made by IGEC Students</span>
+      <h1>Find the Right Career Path with <em>AI-Powered Recommendations</em></h1>
+      <p class="lede">Get personalized career suggestions based on your skills, interests, and goals. Turn your academic background into a clear, actionable roadmap built for success.</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary btn-lg" href="/analyse">
+          Get Your Career Recommendation
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+        <a class="btn btn-ghost btn-lg" href="/careers">Explore Careers</a>
+      </div>
+      <div class="hero-stats">
+        <div><b data-count="{{ stats.careers }}">0</b><span>careers mapped</span></div>
+        <div><b data-count="{{ stats.skills }}">0</b><span>skills indexed</span></div>
+        <div><b data-count="{{ stats.companies }}">0</b><span>target companies</span></div>
+        <div><b data-count="{{ stats.projects }}">0</b><span>project blueprints</span></div>
+      </div>
+    </div>
+
+    <div class="rise" style="animation-delay:.12s">
+      <div class="hero-visual-wrap">
+        <div class="hero-visual">
+          <div class="visual-card">
+            <div class="visual-top">
+              <div>
+                <div class="eyebrow">Personalised Suggestion</div>
+                <h3 style="margin-top:var(--s-2)">Your Top Career Fit</h3>
+              </div>
+              <span class="badge badge-accent">Data Analyst</span>
+            </div>
+            <div class="visual-content">
+              <div class="ring-wrap">
+                <div class="ring" style="width:96px;height:96px">
+                  <svg width="96" height="96" viewBox="0 0 96 96">
+                    <circle class="track" cx="48" cy="48" r="40" />
+                    <circle class="prog" cx="48" cy="48" r="40" stroke-dasharray="251.3" stroke-dashoffset="65" />
+                  </svg>
+                  <span class="ring-label">74%</span>
+                </div>
+                <div>
+                  <div style="font-weight:700;letter-spacing:-.01em">Skill Readiness</div>
+                  <p class="dim" style="font-size:var(--t-sm);margin-top:4px">Based on your strengths &amp; experience</p>
+                  <div class="meter meter-lg" style="margin-top:var(--s-2)"><i style="width:74%"></i></div>
+                </div>
+              </div>
+
+              <div class="skill-list">
+                <div class="kv"><span class="k">SQL</span><span class="v">95% / 95%</span></div>
+                <div class="kv"><span class="k">Data Visualisation</span><span class="v crit">20% / 85%</span></div>
+                <div class="kv"><span class="k">Business Intelligence</span><span class="v high">0% / 70%</span></div>
+                <div class="kv"><span class="k">Excel</span><span class="v">80% / 80%</span></div>
+              </div>
+
+              <div class="chips">
+                <span class="badge badge-warn">Critical Gap</span>
+                <span class="badge">Tableau</span>
+                <span class="badge">Storytelling</span>
+                <span class="badge">Window Functions</span>
+              </div>
+            </div>
+          </div>
+          <div class="illustration" aria-hidden="true">
+            <div class="ill-bg"></div>
+            <div class="ill-grid"></div>
+            <div class="ill-card">
+              <div class="ill-dot"></div>
+              <div>
+                <div class="ill-title">Career Roadmap</div>
+                <div class="ill-sub">Week by week · Actionable</div>
+              </div>
+            </div>
+            <div class="ill-card ill-card-2">
+              <div class="ill-bar"></div>
+              <div class="ill-bar sm"></div>
+              <div class="ill-bar xs"></div>
+            </div>
+            <div class="ill-orb"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHO IT IS FOR -->
+<section class="section wrap-wide">
+  <div class="section-head">
+    <span class="eyebrow">Built for students</span>
+    <h2>Advice you actually get from a mentor, not a horoscope</h2>
+    <p class="lede">Every score is traceable back to a line in your own profile, and every gap comes with a concrete next step.</p>
+  </div>
+
+  <div class="people-grid">
+    <figure class="people-card" data-reveal>
+      <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=600&amp;h=600&amp;fit=crop" alt="Students studying together in a library" loading="lazy" />
+      <figcaption><b>Second-year students</b><span>Figuring out a specialisation, not a job title</span></figcaption>
+    </figure>
+    <figure class="people-card" data-reveal>
+      <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=600&amp;h=600&amp;fit=crop" alt="Graduating students finishing their studies" loading="lazy" />
+      <figcaption><b>Final-year students</b><span>Closing the last blocking gaps before applying</span></figcaption>
+    </figure>
+    <figure class="people-card" data-reveal>
+      <img src="https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?w=600&amp;h=600&amp;fit=crop" alt="Student studying and taking notes at a desk" loading="lazy" />
+      <figcaption><b>Career changers</b><span>Translating existing skills into a new field</span></figcaption>
+    </figure>
+    <figure class="people-card" data-reveal>
+      <img src="https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=600&amp;h=600&amp;fit=crop" alt="Stack of study books on a desk" loading="lazy" />
+      <figcaption><b>Self-taught developers</b><span>Proving a skill without a degree label</span></figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="section wrap-wide">
+  <div class="section-head">
+    <span class="eyebrow">How it works</span>
+    <h2>Four steps, no signup</h2>
+    <p class="lede">The whole pipeline runs locally against a curated knowledge base. Nothing you paste is stored or sent anywhere.</p>
+  </div>
+
+  <div class="grid g-4">
+    <div class="feature card" data-reveal>
+      <span class="step-num">01</span>
+      <div class="feature-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h4"/></svg></div>
+      <h3>Parse</h3>
+      <p>Resume text is normalised and scanned against 97 canonical skills. Section context matters — a skill under <em>Internship</em> counts for more than one on a reading list.</p>
+    </div>
+    <div class="feature card" data-reveal>
+      <span class="step-num">02</span>
+      <div class="feature-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"/></svg></div>
+      <h3>Rank</h3>
+      <p>A TF-IDF content model scores semantic fit, a weighted readiness model scores skill coverage, and market demand breaks the tie. The three blend into one match score.</p>
+    </div>
+    <div class="feature card" data-reveal>
+      <span class="step-num">03</span>
+      <div class="feature-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 20h18M6 20V10M11 20V4M16 20v-7M21 20v-4"/></svg></div>
+      <h3>Prioritise</h3>
+      <p>Every missing skill is scored by importance × how far behind you are, then labelled critical, high or medium. You see the blocking gaps first.</p>
+    </div>
+    <div class="feature card" data-reveal>
+      <span class="step-num">04</span>
+      <div class="feature-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 11.1V12a10 10 0 1 1-5.9-9.1"/><path d="m9 11 3 3L22 4"/></svg></div>
+      <h3>Plan</h3>
+      <p>Gaps become a phased roadmap in weeks, months or years, with curated free resources and portfolio projects chosen specifically to close them.</p>
+    </div>
+  </div>
+</section>
+
+<!-- BROWSE -->
+<section class="section wrap-wide">
+  <div class="row between wrapf gap-3" style="margin-bottom:var(--s-5)">
+    <div>
+      <span class="eyebrow">Browse the map</span>
+      <h2 style="margin-top:var(--s-2)">Every page is explorable on its own</h2>
+    </div>
+    <a class="btn btn-ghost" href="/about">How the model works →</a>
+  </div>
+
+  <div class="grid g-3">
+    <a class="card card-hover" href="/careers">
+      <div class="feature-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg></div>
+      <h3>Career explorer</h3>
+      <p>26 roles with required-skill weights, demand scores and outlook. Filter by category or search instantly.</p>
+    </a>
+    <a class="card card-hover" href="/skills">
+      <div class="feature-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m12 2 2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.3 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8z"/></svg></div>
+      <h3>Skill library</h3>
+      <p>97 skills grouped into 16 categories, each showing which careers depend on it and how often it is demanded.</p>
+    </a>
+    <a class="card card-hover" href="/roadmap">
+      <div class="feature-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+      <h3>Roadmap builder</h3>
+      <p>Pick a career and a duration in weeks, months or years. Get a phased plan with week-by-week focus, without uploading anything.</p>
+    </a>
+    <a class="card card-hover" href="/projects">
+      <div class="feature-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></div>
+      <h3>Project blueprints</h3>
+      <p>Portfolio-ready builds with the exact skills each one demonstrates, so your CV proves the gap is closed.</p>
+    </a>
+    <a class="card card-hover" href="/resources">
+      <div class="feature-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 19.5V5a2 2 0 0 1 2-2h13v18H6a2 2 0 0 1-2-1.5Z"/><path d="M8 7h7"/></svg></div>
+      <h3>Learning resources</h3>
+      <p>Free and open courses, docs and practice sites, mapped to the skills you actually need.</p>
+    </a>
+    <a class="card card-hover" href="/companies">
+      <div class="feature-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6"/></svg></div>
+      <h3>Target companies</h3>
+      <p>See which roles each employer hires for, and the extra skills they weight above the generic baseline.</p>
+    </a>
+  </div>
+</section>
+
+<!-- TOP CAREERS -->
+<section class="section wrap-wide">
+  <div class="section-head">
+    <span class="eyebrow">Highest demand</span>
+    <h2>Where the market is hiring</h2>
+  </div>
+  <div class="grid g-3">
+    {% for c in top_careers %}
+    <a class="card card-hover c-card" href="/careers/{{ c.id }}">
+      <div class="row between gap-2">
+        <span class="badge">{{ c.category }}</span>
+        <span class="dots">{% for i in range(5) %}<i class="{{ 'on' if i < c.demand }}"></i>{% endfor %}</span>
+      </div>
+      <h3>{{ c.title }}</h3>
+      <p>{{ c.description|truncate(120) }}</p>
+      <div class="c-foot">
+        <span class="badge">Demand {{ c.demand }}/5</span>
+        <span class="mono dim" style="font-size:var(--t-xs)">{{ c.skills|length }} skills</span>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="section-sm wrap-wide">
+  <div class="card" style="text-align:center;padding:var(--s-7) var(--s-5);border-color:var(--accent)">
+    <span class="eyebrow">Free · No login · Runs locally</span>
+    <h2 style="margin-block:var(--s-2) var(--s-4);max-width:22ch;margin-inline:auto">Find out where you actually stand</h2>
+    <p class="lede" style="margin-inline:auto">Most students find they are two or three specific skills away from being a credible applicant — never where they assumed.</p>
+    <div class="row gap-3 wrapf" style="justify-content:center;margin-top:var(--s-5)">
+      <a class="btn btn-primary btn-lg" href="/analyse">Analyse my profile</a>
+      <a class="btn btn-ghost btn-lg" href="/careers">Browse careers first</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

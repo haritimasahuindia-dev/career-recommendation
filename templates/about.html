@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+{% block title %}How it works - Student Recommendation{% endblock %}
+{% block description %}The scoring model behind Student Recommendation: TF-IDF content similarity, weighted skill readiness, latent factor analysis and market demand.{% endblock %}
+
+{% block content %}
+<div class="wrap section">
+  <div class="section-head">
+    <span class="eyebrow">Documentation</span>
+    <h1 style="margin-top:var(--s-2);font-size:clamp(1.75rem,4vw,2.75rem)">How the scoring works</h1>
+    <p class="lede">There is no black box. Every number on the site comes from one of four measurable signals, and you can reproduce each of them from the data in this repo.</p>
+  </div>
+
+  <div class="grid g-4" style="margin-bottom:var(--s-7)">
+    <div class="card card-tight"><div class="eyebrow" style="font-size:.6rem">Careers</div><div style="font-size:1.6rem;font-weight:800">{{ stats.careers }}</div></div>
+    <div class="card card-tight"><div class="eyebrow" style="font-size:.6rem">Skills</div><div style="font-size:1.6rem;font-weight:800">{{ stats.skills }}</div></div>
+    <div class="card card-tight"><div class="eyebrow" style="font-size:.6rem">TF-IDF features</div><div style="font-size:1.6rem;font-weight:800">{{ stats.features }}</div></div>
+    <div class="card card-tight"><div class="eyebrow" style="font-size:.6rem">Latent dims</div><div style="font-size:1.6rem;font-weight:800">{{ stats.components }}</div></div>
+  </div>
+
+  <section class="stack gap-4" style="margin-bottom:var(--s-7)">
+    <div class="card">
+      <span class="step-num">Signal 01</span>
+      <h3>Content similarity - {{ (stats.weights.content_similarity * 100)|round|int }}% weight</h3>
+      <p style="font-size:var(--t-sm);margin-block:var(--s-2)">
+        Each career becomes a text document built from its title, description, responsibilities, working styles and required skill names. The student's profile becomes another document, with skills repeated in proportion to proficiency so term frequency reflects strength rather than mere presence.
+      </p>
+      <p style="font-size:var(--t-sm)">
+        <strong>TfidfVectorizer</strong> with unigrams plus bigrams and sublinear term frequency, then cosine similarity across all {{ stats.careers }} careers, {{ stats.features }} features. This is the signal that lets the system recommend a role you never named, because it matches on meaning rather than keywords.
+      </p>
+    </div>
+
+    <div class="card">
+      <span class="step-num">Signal 02</span>
+      <h3>Weighted skill readiness - {{ (stats.weights.skill_readiness * 100)|round|int }}% weight</h3>
+      <p style="font-size:var(--t-sm);margin-block:var(--s-2)">
+        Not all requirements are equal. A career stores a weight per skill, from 1.0 (core, expected on day one) down to 0.2 (a bonus). Readiness is:
+      </p>
+      <div class="milestone mono" style="font-size:var(--t-sm)">
+        readiness = sum(weight * min(proficiency, target)) / sum(weight)
+      </div>
+      <p style="font-size:var(--t-sm)">
+        Skills weighted below 0.6 get a lower effective bar, because a company asking for 0.4 of a skill does not expect mastery. This is the number shown in the ring, and it is why a candidate can score well on similarity and still be "not ready".
+      </p>
+    </div>
+
+    <div class="card">
+      <span class="step-num">Signal 03</span>
+      <h3>Market demand - {{ (stats.weights.market_demand * 100)|round|int }}% weight</h3>
+      <p style="font-size:var(--t-sm);margin-block:var(--s-2)">
+        Demand is stored per career on a 1 to 5 scale and normalised. It is deliberately the smallest weight: demand should break ties between roles you are equally suited to, not push you towards a fashionable title you are not actually good at.
+      </p>
+    </div>
+
+    <div class="card">
+      <span class="step-num">Signal 04</span>
+      <h3>Latent factors - TruncatedSVD, {{ stats.components }} dimensions</h3>
+      <p style="font-size:var(--t-sm);margin-block:var(--s-2)">
+        The {{ stats.skills }} by {{ stats.careers }} skill-by-career matrix is factorised into {{ stats.components }} latent dimensions capturing {{ (stats.explained * 100)|round|int }}% of the variance. Two things come out of this:
+      </p>
+      <ul class="stack gap-2" style="margin-top:var(--s-3)">
+        <li style="font-size:var(--t-sm)"><strong>Career to career similarity.</strong> Cosine similarity in latent space powers the "Similar careers" row, so a Data Scientist sees Data Analyst and ML Engineer as neighbours.</li>
+        <li style="font-size:var(--t-sm)"><strong>Adjacent skills.</strong> The average latent position of the skills you already have is matched against every career, then weighted by each skill's importance. That surface is the closest thing here to collaborative filtering over a knowledge base: it answers "what tends to sit next to what I know".</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="card" style="margin-bottom:var(--s-7)">
+    <span class="step-num">Proficiency estimation</span>
+    <h3 style="margin-bottom:var(--s-3)">How a skill gets its 0 to 1 score</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Evidence</th><th>Base score</th><th>Why</th></tr></thead>
+        <tbody>
+          <tr><td>Under <strong>Internship</strong> or <strong>Experience</strong></td><td class="num">0.82</td><td>Someone else verified you can do this at work</td></tr>
+          <tr><td>Under <strong>Projects</strong></td><td class="num">0.72</td><td>You built something that needed it</td></tr>
+          <tr><td>Under <strong>Achievements</strong></td><td class="num">0.68</td><td>Claimed with an outcome attached</td></tr>
+          <tr><td>Under <strong>Skills</strong> list</td><td class="num">0.55</td><td>Self-reported, unverified</td></tr>
+          <tr><td>Under <strong>Education</strong></td><td class="num">0.45</td><td>Coursework only</td></tr>
+          <tr><td>Each further mention of the same skill</td><td class="num">+0.08</td><td>Capped at 3 bumps, repetition should not manufacture expertise</td></tr>
+          <tr><td>Matched inside <strong>experience</strong>, <strong>internship</strong> or <strong>projects</strong></td><td class="num">+0.05</td><td>Small bonus for the strongest context</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="font-size:var(--t-sm);margin-top:var(--s-4)">
+      The score caps at 0.95. Every detected skill also stores the literal text snippet that produced it, so expand "Why these skills?" on the analysis page to see the evidence yourself.
+    </p>
+  </section>
+
+  <section class="card" style="margin-bottom:var(--s-7);overflow:hidden">
+    <div style="display:grid;grid-template-columns:1.1fr .9fr;gap:0;align-items:stretch" class="about-split">
+      <div style="padding:var(--s-6) var(--s-5)">
+        <span class="eyebrow">The team</span>
+        <h2 style="margin-block:var(--s-2) var(--s-3)">Made by IGEC students</h2>
+        <p style="font-size:var(--t-sm)">
+          This is a major project built by students of IGEC. We wanted the kind of career guidance we never got:
+          something that shows its working, never claims a score it cannot justify, and tells you the next single
+          thing to do rather than a wall of links.
+        </p>
+        <p style="font-size:var(--t-sm)">
+          The knowledge base, the scoring model and the roadmap logic were written from scratch. Nothing here calls
+          an external AI API, so your profile never leaves your own machine.
+        </p>
+        <div class="row gap-2 wrapf" style="margin-top:var(--s-4)">
+          <span class="badge badge-accent">Department of CSE</span>
+          <span class="badge">Major Project</span>
+          <span class="badge">2026</span>
+        </div>
+      </div>
+      <div style="position:relative;min-height:260px">
+        <img src="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=800&amp;h=800&amp;fit=crop"
+             alt="Students studying with textbooks in a university library" loading="lazy"
+             style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" />
+      </div>
+    </div>
+  </section>
+
+  <section class="card" style="margin-bottom:var(--s-7)">
+    <h3 style="margin-bottom:var(--s-3)">Honest limitations</h3>
+    <ul class="stack gap-2">
+      <li style="font-size:var(--t-sm)"><strong>Proficiency is inferred from text, not measured.</strong> A skill listed under Experience is stronger evidence than one on a skills list, but neither is an assessment.</li>
+      <li style="font-size:var(--t-sm)"><strong>Salaries and demand are static figures</strong> baked into the knowledge base, not live market data. Treat them as directional.</li>
+      <li style="font-size:var(--t-sm)"><strong>No user feedback loop.</strong> Scores come from content and weight only, so nothing here learns from which recommendations people actually found useful.</li>
+      <li style="font-size:var(--t-sm)"><strong>The knowledge base is small</strong> at {{ stats.careers }} roles. Content similarity degrades for careers whose descriptions share little vocabulary.</li>
+    </ul>
+  </section>
+
+  <section class="card">
+    <h3 style="margin-bottom:var(--s-3)">Use it programmatically</h3>
+    <p style="font-size:var(--t-sm);margin-bottom:var(--s-3)">Every page on this site is backed by a JSON API.</p>
+    <div class="milestone mono" style="font-size:var(--t-xs);overflow-x:auto">
+POST /api/analyse<br />
+{ "resume_text": "...", "interests_text": "...", "manual_skills": ["python"],<br />
+&nbsp;&nbsp;"target_career": "data-scientist", "horizon_weeks": 16 }<br />
+<br />
+GET&nbsp;&nbsp;/api/meta &middot; /api/careers/{id} &middot; /api/skills/{id} &middot; /api/projects/{id} &middot; /api/companies/{id} &middot; /api/health
+    </div>
+    <div class="row gap-2 wrapf" style="margin-top:var(--s-4)">
+      <a class="btn btn-primary btn-sm" href="/api/docs" target="_blank" rel="noopener">Interactive API docs</a>
+      <a class="btn btn-ghost btn-sm" href="/api/meta" target="_blank" rel="noopener">Knowledge base JSON</a>
+    </div>
+  </section>
+</div>
+{% endblock %}
