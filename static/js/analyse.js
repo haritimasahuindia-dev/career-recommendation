@@ -10,6 +10,18 @@
     });
   };
   var pct = function (v) { return Math.round((v || 0) * 100) + "%"; };
+  var duration = function (weeks) {
+    weeks = Number(weeks) || 0;
+    if (weeks >= 52) {
+      var y = Math.round((weeks / 52) * 10) / 10;
+      return y + (y === 1 ? " year" : " years");
+    }
+    if (weeks >= 4) {
+      var m = Math.round((weeks / 4) * 10) / 10;
+      return m + (m === 1 ? " month" : " months");
+    }
+    return weeks + (weeks === 1 ? " week" : " weeks");
+  };
 
   var meta = null;
   var picked = {};
@@ -163,6 +175,39 @@
       });
   }
 
+  /* ---------- report header ---------- */
+  function renderHead() {
+    var host = $("report-head");
+    var name = ($("student").value || "").trim();
+    var sem = ($("semester").value || "").trim();
+    var top = lastData.matches[0];
+    var focus = lastData.focus;
+    var stamp = new Date().toLocaleString(undefined, {
+      year: "numeric", month: "short", day: "numeric",
+      hour: "2-digit", minute: "2-digit"
+    });
+
+    var title = name ? "Hi " + name + ", here's your career report" : "Your career report";
+    var sub = top
+      ? "Your strongest match is <strong>" + esc(top.title) + "</strong> at " + pct(top.score) + " alignment, based on the profile you shared."
+      : "A personalised plan based on the profile you shared.";
+
+    host.innerHTML =
+      '<div class="row between wrapf gap-3">' +
+        "<div>" +
+          '<span class="eyebrow">Analysis complete · ' + esc(stamp) + "</span>" +
+          '<h2 style="margin-top:var(--s-2)">' + esc(title) + "</h2>" +
+          '<p class="lede" style="margin-top:var(--s-2)">' + sub + "</p>" +
+        "</div>" +
+        '<div class="row gap-1 wrapf">' +
+          (sem ? '<span class="badge">Semester ' + esc(sem) + "</span>" : "") +
+          '<span class="badge">' + lastData.profile.skills_detected + " skills found</span>" +
+          (focus ? '<span class="badge badge-ok">' + esc(focus.readiness_label) + "</span>" : "") +
+        "</div>" +
+      "</div>";
+    host.hidden = false;
+  }
+
   /* ---------- render ---------- */
   function render(d) {
     lastData = d;
@@ -180,7 +225,7 @@
       ["Skills found", d.profile.skills_detected, d.profile.skills_proficient + " above threshold"],
       ["Readiness", d.focus ? pct(d.focus.readiness) : "—", d.focus ? d.focus.readiness_label : ""],
       ["Critical gaps", crit, crit ? "close these first" : "nothing blocking"],
-      ["Roadmap", CL.duration(rm.total_weeks), "personalised plan"],
+      ["Roadmap", duration(rm.total_weeks), "personalised plan"],
       ["Input signal", pct(d.profile.input_strength), "profile detail"]
     ];
     $("summary").innerHTML = tiles.map(function (t) {
@@ -274,7 +319,7 @@
       var weeks = [];
       for (var i = 0; i < Math.min(p.weeks, 8); i++) weeks.push('<span class="week">W' + (i + 1) + " " + esc(p.skills[i % p.skills.length].name) + "</span>");
       return '<div class="phase">' +
-        '<div class="phase-head"><span class="phase-name">' + esc(p.name) + '</span><span class="phase-meta">' + CL.duration(p.weeks) + "</span></div>" +
+        '<div class="phase-head"><span class="phase-name">' + esc(p.name) + '</span><span class="phase-meta">' + duration(p.weeks) + "</span></div>" +
         '<div class="milestone">' + esc(p.milestone) + "</div>" +
         '<div class="row gap-1 wrapf">' + p.skills.map(function (s) {
           return '<span class="chip static">' + esc(s.name) + '<span class="pct">' + pct(s.current) + "</span></span>";
@@ -285,7 +330,7 @@
     var res = f.roadmap.resources.slice(0, 8).map(function (r) {
       return '<div class="res"><span class="res-kind">' + esc(r.kind) + "</span><span>" +
         '<div class="res-title">' + esc(r.title) + "</div>" +
-        '<div class="res-sub">' + esc(r.provider) + " · " + CL.duration(Math.max(1, Math.round(r.hours / 8))) + " · closes " + esc(r.skill_name) +
+        '<div class="res-sub">' + esc(r.provider) + " · " + duration(Math.max(1, Math.round(r.hours / 8))) + " · closes " + esc(r.skill_name) +
         (r.url ? ' · <a href="' + esc(r.url) + '" target="_blank" rel="noopener">open</a>' : "") + "</div></span></div>";
     }).join("");
 
@@ -337,7 +382,7 @@
         "<h3>Skill gap analysis</h3><span class='badge'>" + f.gaps.length + " gaps</span></div>" + gapHtml + "</section>" +
 
       '<section class="card"><div class="row between wrapf gap-2" style="margin-bottom:var(--s-4)">' +
-        "<h3>Learning roadmap</h3><span class='badge'>" + CL.duration(f.roadmap.total_weeks) + "</span></div>" + phases + "</section>" +
+        "<h3>Learning roadmap</h3><span class='badge'>" + duration(f.roadmap.total_weeks) + "</span></div>" + phases + "</section>" +
 
       (res ? '<section class="card"><h3 style="margin-bottom:var(--s-4)">Recommended resources</h3>' + res + "</section>" : "") +
 
